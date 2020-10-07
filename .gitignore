@@ -18,3 +18,6 @@
 
 # Own directories / files specs
 Ignored/
+Docs/
+*.pdf
+*.doc
