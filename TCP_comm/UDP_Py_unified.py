@@ -48,13 +48,11 @@ def encodeNumbers(numbersInList: list) -> str:
 # %% TCP communication with LabVIEW code
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     s.bind((host, port))
+    # Below - from TCP script
     # s.listen()
-    flag = True
-    coordinates = []
-    positions = []
-    print("Python UDP Server launched")
     # (connection, address) = s.accept()
-    # print('Connected by', address)  # Debugging
+    flag = True
+    print("Python UDP Server launched")
     with s:
         while flag:
             (data, address) = s.recvfrom(st_n_bytes)  # Receive 1024 bytes of data from LV client (text commands)
@@ -67,15 +65,28 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 
             if "Image" in command:
                 print(command, '- received command')
-                sendingString = "Receiving the Image"
-                sendingString = sendingString.encode()  # to utf-8
-                s.sendto(sendingString, address)
+                # sendingString = "Receiving an Image"
+                # sendingString = sendingString.encode()  # to utf-8
+                # s.sendto(sendingString, address)  # Confirmation to a client - not neccessary
                 (height, address) = s.recvfrom(st_n_bytes)  # Height and width could be flipped!
                 (width, address) = s.recvfrom(st_n_bytes)   # Height and width could be flipped!
                 width = int(str(width, encoding='utf-8'))
                 height = int(str(height, encoding='utf-8'))
-                print("Sizes of an image:", height, width)  # debug
-                img = np.zeros((height, width), dtype="uint16")  # image initialization
+                print("Sizes of an image [pixels]:", height, "x", width)  # debug
+                img = np.zeros((height, width), dtype="uint16")  # image initialization (container)
+                (img_max_size, address) = s.recvfrom(st_n_bytes)  # estimation of image size in bytes
+                img_max_size = int(str(img_max_size, encoding='utf-8'))
+                #  print("The estimated size:", img_max_size)
+                (raw_img, address) = s.recvfrom(img_max_size)
+                raw_img = (str(raw_img, encoding='utf-8'))
+                string_list = raw_img.split()  # seems using standard whitespace as a separator
+                # print(string_list)
+                for i in range(height):
+                    # print(np.uint16(string_list[width*i:width*(i+1)]))  # debug
+                    img[i,:] = np.uint16(string_list[width*i:width*(i+1)])
+                sendingString = "An Image received"
+                sendingString = sendingString.encode()  # to utf-8
+                s.sendto(sendingString, address)
 
             elif "QUIT" in command:
                 print(command, '- received command')
