@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Server implemented as low-level python code here.
+Server implemented as the low-level python code here.
 
-This script is called by LabVIEW code.
+This script is called by the LabVIEW code for sending / receiving commands.
 """
 # %% Imports
 import socket
@@ -74,16 +74,20 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 height = int(str(height, encoding='utf-8'))
                 print("Sizes of an image [pixels]:", height, "x", width)  # debug
                 img = np.zeros((height, width), dtype="uint16")  # image initialization (container)
-                (img_max_size, address) = s.recvfrom(st_n_bytes)  # estimation of image size in bytes
-                img_max_size = int(str(img_max_size, encoding='utf-8'))
-                #  print("The estimated size:", img_max_size)
-                (raw_img, address) = s.recvfrom(img_max_size)
-                raw_img = (str(raw_img, encoding='utf-8'))
-                string_list = raw_img.split()  # seems using standard whitespace as a separator
+
+                # (img_max_size, address) = s.recvfrom(st_n_bytes)  # estimation of image size in bytes
+                # Really, after tests it was defined that maximum packet size for transfer through UDP in Windows
+                # is about 8000 kb, so this number will be used as a constant to reduce transferring numbers
+                img_max_size = 100*100*8  # 80000 bytes to be transferred
+                n_chunks = 10000 // width
+                print(n_chunks)
+                # (raw_img, address) = s.recvfrom(img_max_size)
+                # raw_img = (str(raw_img, encoding='utf-8'))
+                # string_list = raw_img.split()  # seems using standard whitespace as a separator
                 # print(string_list)
-                for i in range(height):
-                    # print(np.uint16(string_list[width*i:width*(i+1)]))  # debug
-                    img[i,:] = np.uint16(string_list[width*i:width*(i+1)])
+                # for i in range(height):
+                #     # print(np.uint16(string_list[width*i:width*(i+1)]))  # debug
+                #     img[i, :] = np.uint16(string_list[width*i:width*(i+1)])
                 sendingString = "An Image received"
                 sendingString = sendingString.encode()  # to utf-8
                 s.sendto(sendingString, address)
@@ -92,6 +96,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 print(command, '- received command')
                 # Do the quiting action with a delay
                 s.sendto(sendingString, address)
-                time.sleep(0.2)  # A delay for preventing of closing connection automatically by Python that causing errors on LV
+                time.sleep(0.2)  # A delay for preventing of closing connection automatically by Python (causing errors)
                 flag = False
                 break
