@@ -12,7 +12,7 @@ import numpy as np
 # %% Parameters (global)
 host = 'localhost'
 port = 5005  # Port for this script
-port_listener = 5006
+port_listener = 5100
 st_n_bytes = 1024
 
 
@@ -68,26 +68,41 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 # sendingString = "Receiving an Image"
                 # sendingString = sendingString.encode()  # to utf-8
                 # s.sendto(sendingString, address)  # Confirmation to a client - not neccessary
-                (height, address) = s.recvfrom(st_n_bytes)  # Height and width could be flipped!
-                (width, address) = s.recvfrom(st_n_bytes)   # Height and width could be flipped!
+                (width, address) = s.recvfrom(st_n_bytes)  # Height and width could be flipped!
+                (height, address) = s.recvfrom(st_n_bytes)   # Height and width could be flipped!
                 width = int(str(width, encoding='utf-8'))
                 height = int(str(height, encoding='utf-8'))
-                print("Sizes of an image [pixels]:", height, "x", width)  # debug
+                print("Sizes of an image [pixels]:", width, "x", height)  # debug
                 img = np.zeros((height, width), dtype="uint16")  # image initialization (container)
 
                 # (img_max_size, address) = s.recvfrom(st_n_bytes)  # estimation of image size in bytes
                 # Really, after tests it was defined that maximum packet size for transfer through UDP in Windows
                 # is about 8000 kb, so this number will be used as a constant to reduce transferring numbers
-                img_max_size = 100*100*8  # 80000 bytes to be transferred
-                n_chunks = 10000 // width
-                print(n_chunks)
-                # (raw_img, address) = s.recvfrom(img_max_size)
-                # raw_img = (str(raw_img, encoding='utf-8'))
-                # string_list = raw_img.split()  # seems using standard whitespace as a separator
-                # print(string_list)
-                # for i in range(height):
-                #     # print(np.uint16(string_list[width*i:width*(i+1)]))  # debug
-                #     img[i, :] = np.uint16(string_list[width*i:width*(i+1)])
+
+                img_max_size = 110*100*8  # ... bytes to be transferred ( ~ 80000 should be transferred w/t errors)
+                n_rows_tr = 11000 // width
+                n_chunks = height // n_rows_tr
+                n_last_transfer = height - (n_chunks * n_rows_tr)
+                if n_last_transfer > 0:
+                    n_chunks += 1
+                print("# of chunks:", n_chunks)
+                print("# for last transfer:", n_last_transfer)
+                # Below - receiving an image in chunks
+                for i in range(n_chunks):
+                    (raw_chunk, address) = s.recvfrom(img_max_size)
+                    raw_chunk = (str(raw_chunk, encoding='utf-8'))
+                    string_chunk = raw_chunk.split()  # using standard whitespace as a separator
+                    # print("string chunk:", string_chunk)
+                    if i < (n_chunks - 1):
+                        for j in range(n_rows_tr):
+                            img[i*n_rows_tr + j, :] = np.uint16(string_chunk[width*j:width*(j+1)])
+                    if (i == (n_chunks - 1)) and (n_last_transfer > 0):
+                        for j in range(n_last_transfer):
+                            img[i*n_rows_tr + j, :] = np.uint16(string_chunk[width*j:width*(j+1)])
+                    elif (i == (n_chunks - 1)):
+                        for j in range(n_rows_tr):
+                            img[i*n_rows_tr + j, :] = np.uint16(string_chunk[width*j:width*(j+1)])
+                print("Image receiving completed")
                 sendingString = "An Image received"
                 sendingString = sendingString.encode()  # to utf-8
                 s.sendto(sendingString, address)
@@ -99,3 +114,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 time.sleep(0.2)  # A delay for preventing of closing connection automatically by Python (causing errors)
                 flag = False
                 break
+
+        # %% For correctly representation of an image - it should be performed after quiting of image transfer
+        # For testing if the transfer of an image perfromed correctly
+        try:
+            if np.size(img, axis=0) > 0:
+                from skimage import io
+                from skimage.util import img_as_ubyte
+                import matplotlib.pyplot as plt
+                if np.max(img) < 256:
+                    img = np.uint8(img)
+                img_show = img_as_ubyte(img)
+                plt.figure("Transferred image")
+                io.imshow(img_show)
+        except NameError:
+            print("No image transferred")
