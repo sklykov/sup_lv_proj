@@ -25,6 +25,7 @@ class independenPort(Thread):
     host = ''
     portN = 0
     sock = None
+    received_str = ''
 
     def __init__(self, host, port_number):
         self.host = host
@@ -40,11 +41,12 @@ class independenPort(Thread):
         try:
             sock.bind((self.host, self.portN))
             sock.settimeout(2)
-            print("Port", self.portN, "opened")
+            time.sleep(0.1)
+            # print("Port", self.portN, "opened")  # for debugging
             (data, address) = sock.recvfrom(st_n_bytes)
             data = str(data, encoding='utf-8')  # decoding received data
             print("Received:", data)
-            time.sleep(0.1)
+            self.received_str = data
             sendingString = "port " + str(self.portN) + " OPENED"
             sendingString = sendingString.encode()  # to utf-8
             sock.sendto(sendingString, address)
@@ -80,6 +82,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as mainServer:
             port1.join()
             port2.join()
             print("Open ports finished")
+            print("Collected data from ports:", port1.received_str, port2.received_str)
 
         elif "QUIT" in command:
             print(command, '- received command')
