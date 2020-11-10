@@ -30,13 +30,14 @@ def openIndependentPort(host, port_number, sharedString):
     sharedString.value = 'entered to a subprocess'
     try:
         sock.bind((host, port_number))
+        sock.settimeout(2)
         (data, address) = sock.recvfrom(st_n_bytes)
         # data = str(data, encoding='utf-8')  #  decoding will be at another place
         sharedString.value = data
         sendingString = "port " + str(port_py) + " OPENED"
         sendingString = sendingString.encode()  # to utf-8
         sock.sendto(sendingString, address)
-        time.sleep(0.3)
+        time.sleep(0.1)
     finally:
         sock.close()
 
