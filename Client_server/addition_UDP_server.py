@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Test UDP server - open, receive, close.
+Test additional, independent UDP server - open, receive, close.
 
 @author: ssklykov
 """

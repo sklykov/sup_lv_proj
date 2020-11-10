@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Test UDP server - open, receive, close by using independent threads (from threading library).
+Test transfer of an image through threaded multiple UDP ports launched by this script and LV code.
 
-Independet ports could be opened by threads and receive data from ports opened by the LV code.
+This script should reveal performance and capability to send an image through two independent ports.
 
 @author: ssklykov
 """
@@ -10,7 +10,7 @@ Independet ports could be opened by threads and receive data from ports opened b
 import socket
 import time
 from threading import Thread
-# import numpy as np
+import numpy as np
 
 # %% Parameters
 host = 'localhost'
@@ -21,7 +21,7 @@ st_n_bytes = 1024
 
 
 # %% Independent UDP server as a thread
-class independenPort(Thread):
+class independentImgPort(Thread):
     """
     Implement socket on individual thread launched by this class (subclass of Thread class with overriden
                                                                   methods __init__ and run).
@@ -30,6 +30,7 @@ class independenPort(Thread):
     portN = 0
     sock = None
     received_str = ''
+    received_img_chunk = []
 
     def __init__(self, host, port_number):
         self.host = host
@@ -74,19 +75,37 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as mainServer:
             sendingString = sendingString.encode()  # to utf-8
             mainServer.sendto(sendingString, address)
 
-        elif "Open ports" in command:
+        elif "Img multiports" in command:
             print(command, '- received command')
-            sendingString = "ports" + " " + str(port_py) + " " + str(port_py+1) + " " + " will be opened"
-            sendingString = sendingString.encode()  # to utf-8
+            # sendingString = "ports" + " " + str(port_py) + " " + str(port_py+1) + " " + " will be opened"
+            # sendingString = sendingString.encode()  # to utf-8
+            # mainServer.sendto(sendingString, address)
+            # Code for image transfer has been taken from UDP_Py_unified module!!!
+            (width, address) = mainServer.recvfrom(st_n_bytes)  # Height and width could be flipped!
+            (height, address) = mainServer.recvfrom(st_n_bytes)  # Height and width could be flipped!
+            width = int(str(width, encoding='utf-8'))
+            height = int(str(height, encoding='utf-8'))
+            print("Sizes of an image [pixels]:", width, "x", height)  # debug
+            img = np.zeros((height, width), dtype="uint16")  # image initialization (container)
+            img_max_size = 110*100*8
+            n_rows_tr = 11000 // width
+            n_chunks = height // n_rows_tr
+            n_last_transfer = height - (n_chunks * n_rows_tr)
+            if n_last_transfer > 0:
+                n_chunks += 1
+            print("# of chunks:", n_chunks)
+            print("# for last transfer:", n_last_transfer)
+
+            # port1 = independentImgPort(host, port_py)  # initialize 1st port
+            # port2 = independentImgPort(host, port_py + 1)
+            # port1.start()  # start listening to chunks to be transferred
+            # port2.start()
+            # port1.join()  # force this script to wait completion of data transfer
+            # port2.join()
+            # print("Collected data from ports:", port1.received_str, port2.received_str)
+            print("Image transfer through multiports finished")
+            sendingString = "Image transferred".encode()
             mainServer.sendto(sendingString, address)
-            port1 = independenPort(host, port_py)
-            port2 = independenPort(host, port_py + 1)
-            port1.start()
-            port2.start()
-            port1.join()
-            port2.join()
-            print("Open ports finished")
-            print("Collected data from ports:", port1.received_str, port2.received_str)
 
         elif "QUIT" in command:
             print(command, '- received command')

@@ -2,7 +2,8 @@
 """
 Test UDP server - open, receive, close by passing opening UDP server to multiprocessing.Process.
 
-It doesn't work unfortunately because the server doesn't launches...
+It doesn't work unfortunately because the server doesn't launches... After sending command it reports in the
+LabVIEW code that connection closed by the peer...
 
 @author: ssklykov
 """
@@ -31,6 +32,7 @@ def openIndependentPort(host, port_number, sharedString):
     try:
         sock.bind((host, port_number))
         sock.settimeout(2)
+        time.sleep(0.1)
         (data, address) = sock.recvfrom(st_n_bytes)
         # data = str(data, encoding='utf-8')  #  decoding will be at another place
         sharedString.value = data

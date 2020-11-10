@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Server implemented as the low-level python code here.
+UDP server implemented as the low-level python code here.
 
-This script is called by the LabVIEW code for sending / receiving commands.
+This script is used in connection with the LabVIEW code for sending / receiving commands and, moreover,
+images. This script is used for testing of capabilities of entire image transfer.
 """
 # %% Imports
 import socket
@@ -16,24 +17,9 @@ port_listener = 5100
 st_n_bytes = 1024
 
 
-# %% Decoding numbers from a received string (through TCP connection)
-def decodeNumbers(receivedStr: str) -> list:
-    """Decode string containing numbers ('.' - as a decimal point) to a list containing numbers."""
-    decodedList = []
-    listStringNumbers = receivedStr.split(' ')  # Splitting received numbers to the list
-    listStringNumbers.remove('')  # Removing the last empty character
-    # print(listStringNumbers, ' - separated numbers')  # Debugging
-    for numberStr in listStringNumbers:
-        # print(numberStr, ' - single number in a string')  # Debugging
-        number = float(numberStr)
-        decodedList.append(number)
-    return decodedList
+# %% Decoding pixel values - redundant explicit method
 
-
-# %% Decoding pixel values
-
-
-# %% Encoding list of numbers into string for sending it (through TCP connection)
+# %% Encoding list of numbers into string for sending it - RETAINED for needs of back communication
 def encodeNumbers(numbersInList: list) -> str:
     """Encode list of numbers to a string for sending it to a client."""
     sending_string = str(numbersInList)
@@ -45,7 +31,7 @@ def encodeNumbers(numbersInList: list) -> str:
     return sending_string
 
 
-# %% TCP communication with LabVIEW code
+# %% UDP communication with LabVIEW code for transferring an image
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     s.bind((host, port))
     # Below - from TCP script
@@ -80,6 +66,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 # is about 8000 kb, so this number will be used as a constant to reduce transferring numbers
 
                 img_max_size = 110*100*8  # ... bytes to be transferred ( ~ 80000 should be transferred w/t errors)
+                # 11000 may seem as magical number but I haven't found the way to access it through some call
+                # 11000 = 110 * 100 pixels that could be transferred w/t error through single UDP port (Win)
                 n_rows_tr = 11000 // width
                 n_chunks = height // n_rows_tr
                 n_last_transfer = height - (n_chunks * n_rows_tr)
@@ -90,11 +78,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 # Below - receiving an image in chunks
                 for i in range(n_chunks):
                     (raw_chunk, address) = s.recvfrom(img_max_size)
-                    raw_chunk = (str(raw_chunk, encoding='utf-8'))
-                    string_chunk = raw_chunk.split()  # using standard whitespace as a separator
+                    raw_chunk = (str(raw_chunk, encoding='utf-8'))  # Converting byte string to normal one
+                    string_chunk = raw_chunk.split()  # split to numbers using standard whitespace as a separator
                     # print("string chunk:", string_chunk)
                     if i < (n_chunks - 1):
                         for j in range(n_rows_tr):
+                            # Transfer by a row to cumulative image
                             img[i*n_rows_tr + j, :] = np.uint16(string_chunk[width*j:width*(j+1)])
                     if (i == (n_chunks - 1)) and (n_last_transfer > 0):
                         for j in range(n_last_transfer):
