@@ -75,6 +75,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                     n_chunks += 1
                 print("# of chunks:", n_chunks)
                 print("# for last transfer:", n_last_transfer)
+                print("# of rows for transfer", n_rows_tr)
                 # s.settimeout(2)
                 # Below - receiving an image in chunks
                 for i in range(n_chunks):

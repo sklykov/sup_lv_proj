@@ -61,7 +61,7 @@ class independentImgPort(Thread):
             elif self.nRowsLast > 0:
                 self.received_img_chunk = np.zeros((self.nRowsReceive*(self.nDispatchedChunks - 1) + self.nRowsLast,
                                                     self.img_width), dtype="uint16")
-            sock.settimeout(2)
+            sock.settimeout(1.2)
             # time.sleep(0.005)
             # print("Port", self.portN, "opened")  # for debugging
             # Transfer chunk by chunk
@@ -139,10 +139,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as mainServer:
             # Opening independent ports for receiving images
             (nPorts, address) = mainServer.recvfrom(st_n_bytes)  # Number of opened ports
             nPorts = int(str(nPorts, encoding='utf-8'))
+            print("# of opening ports:", nPorts)
             nChunks_port = n_chunks // nPorts  # Calculation of chunks that will be transferred through single port
             remained_chunk = n_chunks - (nChunks_port * nPorts)
             if remained_chunk > 0:  # Calculation of chunks that will be transferred through last opened port
-                nChunks_last = nChunks_port + 1
+                nChunks_last = remained_chunk + nChunks_port
             else:
                 nChunks_last = nChunks_port
             print("# of chunks for regular transfer:", nChunks_port)
