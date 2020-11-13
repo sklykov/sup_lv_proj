@@ -46,7 +46,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as mainServer:
                 sendingString = "port " + str(port_py) + " OPENED"
                 sendingString = sendingString.encode()  # to utf-8
                 receiver.sendto(sendingString, address)
-                time.sleep(0.05)
+                time.sleep(0.25)
             finally:
                 receiver.close()
 

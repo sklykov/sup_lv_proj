@@ -1,6 +1,8 @@
-# Libraries
+# LV Libraries (optional)
 *.lvlibp
 *.llb
+*.aliases
+*.lvlps
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -22,3 +24,20 @@ Docs/
 *.pdf
 *.doc
 *.docx
+
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Some Python specific
+__pycache__/
+*.py[cod]
+*$py.class
