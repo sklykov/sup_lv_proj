@@ -32,8 +32,6 @@ class independentStrPort(Thread):
     sock = None
     received_str = ''
     received_img_chunk = []
-    nRowsReceive = 0
-    nRowsLast = 0
     nDispatchedChunks = 0
     chunk_max_size = 0
 
@@ -41,11 +39,8 @@ class independentStrPort(Thread):
         self.host = host
         self.portN = port_number
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # self.nRowsReceive = nRowsReceive
-        # self.nRowsLast = nRowsLast
         self.nDispatchedChunks = nDispatchedChunks
         self.chunk_max_size = chunk_max_size
-        # self.img_width = img_width
         Thread.__init__(self)
         # print("Port", self.portN, "initialized")  # for debugging
         # print(self.sock, "- check socket object created")  # for debugging
@@ -55,16 +50,10 @@ class independentStrPort(Thread):
         sock = self.sock
         try:
             sock.bind((self.host, self.portN))
-            # if self.nRowsLast == 0:
-            #     self.received_img_chunk = np.zeros((self.nRowsReceive*self.nDispatchedChunks, self.img_width),
-            #                                        dtype="uint16")  # container for chunk initialization
-            # elif self.nRowsLast > 0:
-            #     self.received_img_chunk = np.zeros((self.nRowsReceive*(self.nDispatchedChunks - 1) + self.nRowsLast,
-            #                                         self.img_width), dtype="uint16")
             sock.settimeout(1.2)
             # print("Port", self.portN, "opened")  # for debugging
-
             self.received_img_chunk = [""] * self.nDispatchedChunks
+
             # Transfer chunk by chunk
             for i in range(self.nDispatchedChunks):
                 (raw_chunk, address) = sock.recvfrom(self.chunk_max_size)  # receiving raw (byte) string
@@ -81,29 +70,6 @@ class independentStrPort(Thread):
 
                 # Collecting all received string in a list
                 self.received_img_chunk[i] = raw_chunk
-
-                # TODO: turn all conversions to the main thread (can be also threaded)
-
-                # string_chunk = raw_chunk.split()  # split to numbers using standard whitespace as a separator
-                # # Case below - for normal port (not last one)
-                # if self.nRowsLast == 0:  # Last transfer - not equal number of string
-                #     for j in range(self.nRowsReceive):
-                #         # Saving raw string as several rows in image
-                #         self.received_img_chunk[i*self.nRowsReceive + j, :] = np.uint16(
-                #             string_chunk[self.img_width*j:self.img_width*(j+1)])
-                # # Case below - for last port
-                # else:
-                #     # Exceptional case - transfer last rows from images (remained)
-                #     if (i == (self.nDispatchedChunks - 1)):
-                #         for j in range(self.nRowsLast):
-                #             self.received_img_chunk[i*self.nRowsReceive + j, :] = np.uint16(
-                #                 string_chunk[self.img_width*j:self.img_width*(j+1)])
-                #     # Common case - transfer rows before remained ones (as a tail)
-                #     else:
-                #         for j in range(self.nRowsReceive):
-                #             # Saving raw string as several rows in image
-                #             self.received_img_chunk[i*self.nRowsReceive + j, :] = np.uint16(
-                #                 string_chunk[self.img_width*j:self.img_width*(j+1)])
 
         finally:
             sock.close()
@@ -208,7 +174,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as mainServer:
                                 img[(count + m):(count + (m+1)), :] = np.uint16(
                                     string_chunk[m*width:(m+1)*width])
                             count += n_rows_tr
-
             # print(img)
             print("Image transfer through multiports finished")
             sendingString = "Image transferred".encode()
