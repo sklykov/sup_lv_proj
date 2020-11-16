@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Test transfer of an image through threaded multiple UDP ports launched by this script and LV code.
+Test transfer of strings through threaded multiple UDP ports launched by this script and LV code.
 
-This script should reveal performance and capability to send an image through two independent ports.
+This script should reveal performance and capability to send an image through four independent ports.
+Byte strings, that are sent through threaded ports, are decoded to an image chunks in the main thread.
 
 @author: ssklykov
 """
