@@ -1,6 +1,7 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
 <Project Type="Project" LVVersion="20008000">
 	<Item Name="My Computer" Type="My Computer">
+		<Property Name="NI.SortType" Type="Int">3</Property>
 		<Property Name="server.app.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="server.control.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="server.tcp.enabled" Type="Bool">false</Property>
@@ -16,10 +17,11 @@
 		<Item Name="subVI" Type="Folder" URL="../subVI">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
+		<Item Name="LV_UDP_client.vi" Type="VI" URL="../LV_UDP_client.vi"/>
+		<Item Name="LV_n_UDP_clients.vi" Type="VI" URL="../LV_n_UDP_clients.vi"/>
 		<Item Name="LV_multiports_multiservers.vi" Type="VI" URL="../LV_multiports_multiservers.vi"/>
 		<Item Name="LV_multiports_multiservers_2.vi" Type="VI" URL="../LV_multiports_multiservers_2.vi"/>
-		<Item Name="LV_n_UDP_clients.vi" Type="VI" URL="../LV_n_UDP_clients.vi"/>
-		<Item Name="LV_UDP_client.vi" Type="VI" URL="../LV_UDP_client.vi"/>
+		<Item Name="LV_multiports-servers_str_tr.vi" Type="VI" URL="../LV_multiports-servers_str_tr.vi"/>
 		<Item Name="Tests.txt" Type="Document" URL="../Tests.txt"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
