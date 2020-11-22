@@ -1,0 +1,9 @@
+1024X1024:
+Writing delimeted file LV: 335 331 364
+Saving png (w/t compress): 30  29  36
+Saving tiff(w/t compress): 7   13  11
+
+2048X2048:
+Writing delimeted file LV: 1394 1344 1405 1404 1395 1386 
+Saving png (w/t compress): 120  155  120  122  119  129  120
+Saving tiff(w/t compress): 31   32   34   33   31   33   31
