@@ -1,0 +1,7 @@
+Performance measurments (ms)
+
+1024x1024:
+Saving tif file: 20  19  18  18  21
+
+2048x2048:
+Saving tif file: 54  51  55  52  51
