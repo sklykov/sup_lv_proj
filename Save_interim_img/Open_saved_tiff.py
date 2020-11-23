@@ -2,7 +2,7 @@
 """
 Open the saved interim tiff file and measure performance.
 
-@author: Serega
+@author: ssklykov
 """
 # %% Imports
 from PIL import Image
