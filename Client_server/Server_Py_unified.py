@@ -63,6 +63,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 print(command, '- received command')
                 # Do the quiting action with a delay
                 connection.send(b'QUIT-DONE')
-                time.sleep(0.2)  # A delay for preventing of closing connection automatically by Python that causing errors on LV
+                time.sleep(0.2)  # A delay for preventing of closing connection automatically by Python
                 flag = False
                 break

@@ -12,7 +12,7 @@ import socket
 
 # %% Script-wide parameters
 host = 'localhost'
-port_py_main = 5005  # number of the first ports of that will be opened
+port_py_main = 5050  # number of the first ports of that will be opened
 port_LV = 5100
 st_n_bytes = 1024
 
@@ -59,19 +59,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as mainServer:
             time.sleep(0.15)  # A delay for preventing of closing connection automatically by Python (causing errors)
             flag = False
             break
-
-
-# %% For correctly representation of an image - it should be performed after quiting of image transfer
-# For testing if the transfer of an image perfromed correctly
-try:
-    if np.size(img, axis=0) > 0:
-        from skimage import io
-        from skimage.util import img_as_ubyte
-        import matplotlib.pyplot as plt
-        if np.max(img) < 256:
-            img = np.uint8(img)
-        img_show = img_as_ubyte(img)
-        plt.figure("Transferred image")
-        io.imshow(img_show)
-except NameError:
-    print("No image transferred")

@@ -17,6 +17,7 @@
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
 		<Item Name="Main_Transfer.vi" Type="VI" URL="../Main_Transfer.vi"/>
+		<Item Name="Main_Transfer_LaunchPy.vi" Type="VI" URL="../Main_Transfer_LaunchPy.vi"/>
 		<Item Name="Tests.txt" Type="Document" URL="../Tests.txt"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
