@@ -2,7 +2,7 @@
 """
 Test capabilties of image transfer through saving it to the disk, reading and subsequent deleting.
 
-@author: ssklykov
+@author: sklykov
 """
 # %% Imports
 from PIL import Image

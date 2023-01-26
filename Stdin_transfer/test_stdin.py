@@ -3,7 +3,7 @@
 Test of parcing of stdin.
 This script echoes the stdin using standard print function.
 
-@author: ssklykov
+@author: sklykov
 """
 # %% Imports
 import sys

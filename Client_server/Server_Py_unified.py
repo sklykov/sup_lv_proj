@@ -3,6 +3,8 @@
 Server implemented as low-level python code here.
 
 This script is called by LabVIEW code.
+
+@author: sklykov
 """
 # %% Imports
 import socket

@@ -4,7 +4,7 @@ Test of parcing of stdin - image coded in a string.
 This script echoes some image data (mean or average pixel value).
 This scrip is called by execute command in command line in a headless mode.
 
-@author: ssklykov
+@author: sklykov
 """
 # %% Imports
 import sys
