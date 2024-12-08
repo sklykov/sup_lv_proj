@@ -41,3 +41,4 @@ ehthumbs.db
 __pycache__/
 *.py[cod]
 *$py.class
+.idea/
