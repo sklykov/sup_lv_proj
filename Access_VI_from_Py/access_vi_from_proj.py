@@ -25,10 +25,7 @@ vi_path = str(current_path.joinpath("Main.vi")); ctl_py = current_path.joinpath(
 lvproject = lv.OpenProject(project_path).Application  # right reference (from the hint (Dev. Notes))
 main_vi = lvproject.GetVIReference(vi_path)
 # py_connected = main_vi.GetControlValue("Py Connected")  # Error: parameter not found in the VI's connector pane (only on Block Diagram)
-main_indicator = main_vi.GetControlValue("Script Connected")
-print("Indicator on the Main VI:", main_indicator)
-if main_indicator:
-    main_vi.SetControlValue("Script Connected", False)
+main_indicator = main_vi.GetControlValue("Script Connected"); print("Connection Indicator on the Main VI:", main_indicator)
 
 # Access and change value on the *ctl - working but not updating the typedef used on the block diagram
 test_ctl_value = False  # flag for testing
@@ -65,3 +62,11 @@ if test_subvi_in_proj and subvi_path.exists():
         subvi_ref.SetControlValue("Py Script Connect", True)
         py_script_connected = subvi_ref.GetControlValue("Py Script Connect")
         print("Get the value:", py_script_connected); time.sleep(2.5)
+
+# Access the control panel values of the Main.vi
+test_mainvi_in_proj = True  # flag for testing
+flag_mainvi = main_vi.GetControlValue("Script Flag")
+if test_mainvi_in_proj and not main_indicator and not flag_mainvi:
+    main_vi.SetControlValue("Script Flag", True); time.sleep(0.25)  # Script Flag set back to False by Main.vi
+    main_indicator = main_vi.GetControlValue("Script Connected")
+    print("Connection Indicator on the Main VI:", main_indicator)

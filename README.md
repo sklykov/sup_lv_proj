@@ -1,3 +1,4 @@
 # sup_lv_proj
-This repository is intended for keeping some workflows / useful functions of common image / data processing implemented mostly as LabVIEW programs.  
-These programs (vi-s) are "made" in the LabVIEW 2020 / 2023, if someone will be interested in re-using it somehow.  
+This repository is designed to store a collection of boilerplates, tested workflows, demos, and useful subprograms for LabVIEW programs and Python scripts.    
+The LabVIEW programs (with the **.vi** extension) are primarily developed in versions 2020 and 2023, and may be valuable to anyone interested in reviewing or reusing the code.  
+
