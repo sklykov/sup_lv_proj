@@ -1,3 +1,7 @@
+# Repo specific
+actor_frm_demo/
+qmh_frm_demo/
+
 # LV Libraries (optional)
 *.lvlibp
 *.llb

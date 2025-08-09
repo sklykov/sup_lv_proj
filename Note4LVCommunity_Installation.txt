@@ -1,0 +1,3 @@
+For installation load *iso image, mount it and install; 
+License Manager - select only Community edition and check for a license - it should be granted; 
+Tested on LV 2023 Q3; 
